@@ -23,7 +23,7 @@ func main() {
 	//Get fetcher data
 	r.Get("/api/fetcher", handler.ScrapeGet(scrape))
 	//Post fetcher data
-	r.Post("/api/fetcher", handler.ScrapePost())
+	r.Post("/api/fetcher", handler.ScrapePost(scrape))
 
 	log.Println("Serving on port:", port)
 	http.ListenAndServe(port, r)
