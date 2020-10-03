@@ -18,3 +18,4 @@ curl -si localhost:8080/api/fetcher -X GET
 
 [chi Hello World example](https://github.com/go-chi/chi/blob/master/_examples/hello-world/main.go)
 [chi REST example](https://github.com/go-chi/chi/blob/master/_examples/rest/main.go)
+[REST API with Go, Chi and Handler Testing by David Alsh](https://www.youtube.com/watch?v=zeme_TmXyBk)
