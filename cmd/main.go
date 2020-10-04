@@ -86,10 +86,9 @@ func deleteCrawlerData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dataToSent := map[string]int64{"id": idToFind}
-	log.Println("idToFind:", idToFind)
-	log.Println("response payload:", dataToSent)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(dataToSent)
-	w.WriteHeader(200)
 }
 
 func main() {
