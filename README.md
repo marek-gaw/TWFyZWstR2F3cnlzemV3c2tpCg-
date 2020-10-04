@@ -4,9 +4,10 @@
 
 Crawler data are stored to MongoDB database and issued via REST API.
 
-## Installation
+## Dev Install
 
 ```bash
+go mod init fetcher
 go get go.mongodb.org/mongo-driver/mongo
 ```
 

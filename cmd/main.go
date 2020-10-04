@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -36,8 +37,9 @@ func getCrawlerData(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
+	var idToFind, _ = strconv.Atoi(id)
 	data := &crawlerdata.UrlToFetch{}
-	err := mh.GetOne(data, bson.M{"id": id})
+	err := mh.GetOne(data, bson.M{"id": idToFind})
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Crawler Data with id: %s not found", id), 404)
 		return
