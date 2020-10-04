@@ -28,6 +28,7 @@ func registerRoutes() http.Handler {
 
 func getAllCrawlerData(w http.ResponseWriter, r *http.Request) {
 	crawlerData := mh.GetAll(bson.M{})
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(crawlerData)
 }
 
@@ -44,6 +45,8 @@ func getCrawlerData(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Crawler Data with id: %s not found", id), 404)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(data)
 }
 
@@ -54,7 +57,7 @@ func addCrawlerData(w http.ResponseWriter, r *http.Request) {
 	data.CreatedAt = time.Now()
 	err := mh.GetOne(existingCrawlerData, bson.M{"id": data.Id})
 	if err == nil {
-		http.Error(w, fmt.Sprintf("Crawler data with id: %s already exist", data.Id), 400)
+		http.Error(w, fmt.Sprintf("Crawler data with id: %d already exist", data.Id), 400)
 		return
 	}
 	_, err = mh.AddOne(&data)
@@ -62,8 +65,11 @@ func addCrawlerData(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprint(err), 400)
 		return
 	}
-	w.Write([]byte("Crawler data created successfully"))
-	w.WriteHeader(201)
+
+	dataToSent := map[string]int64{"id": data.Id}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(dataToSent)
 }
 
 func deleteCrawlerData(w http.ResponseWriter, r *http.Request) {
