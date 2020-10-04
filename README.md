@@ -8,6 +8,9 @@ Crawler data are stored to MongoDB database and issued via REST API.
 
 ```bash
 go mod init fetcher
+go get github.com/go-chi/
+go get github.com/go-chi/docgen
+go get github.com/go-chi/render
 go get go.mongodb.org/mongo-driver/mongo
 ```
 
