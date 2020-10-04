@@ -37,7 +37,7 @@ func getCrawlerData(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
-	var idToFind, _ = strconv.Atoi(id)
+	var idToFind, _ = strconv.ParseInt(id, 10, 64)
 	data := &crawlerdata.UrlToFetch{}
 	err := mh.GetOne(data, bson.M{"id": idToFind})
 	if err != nil {
@@ -67,7 +67,29 @@ func addCrawlerData(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteCrawlerData(w http.ResponseWriter, r *http.Request) {
+	existingCrawlerData := &crawlerdata.UrlToFetch{}
+	dbId := chi.URLParam(r, "id")
+	if dbId == "" {
+		http.Error(w, http.StatusText(404), 404)
+		return
+	}
+	var idToFind, _ = strconv.ParseInt(dbId, 10, 64)
+	err := mh.GetOne(existingCrawlerData, bson.M{"id": idToFind})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Crawled data with id: %d does not exist", idToFind), 400)
+		return
+	}
+	_, err = mh.RemoveOne(bson.M{"id": idToFind})
+	if err != nil {
+		http.Error(w, fmt.Sprint(err), 400)
+		return
+	}
 
+	dataToSent := map[string]int64{"id": idToFind}
+	log.Println("idToFind:", idToFind)
+	log.Println("response payload:", dataToSent)
+	json.NewEncoder(w).Encode(dataToSent)
+	w.WriteHeader(200)
 }
 
 func main() {
