@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fetcher/crawlerdata"
+	pool "fetcher/worker"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,7 +14,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+const workerCount = 2
+
 var mh *crawlerdata.MongoHandler
+var collector *pool.Collector
 
 func registerRoutes() http.Handler {
 	r := chi.NewRouter()
@@ -70,6 +74,13 @@ func addCrawlerData(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(dataToSent)
+
+	log.Println("Adding new job to Worker: %s", data.Url)
+	collector.Work <- pool.Work{
+		ID:       data.Id,
+		Url:      data.Url,
+		Interval: data.Interval,
+	}
 }
 
 func deleteCrawlerData(w http.ResponseWriter, r *http.Request) {
@@ -101,5 +112,10 @@ func main() {
 	mongoDbConnection := "mongodb://localhost:27017"
 	mh = crawlerdata.NewHandler(mongoDbConnection) //Create an instance of MongoHander with the connection string provided
 	r := registerRoutes()
+
+	//worker pool
+	log.Println("starting worker...")
+	collector = pool.StartDispatcher(workerCount) // start up worker pool
+
 	log.Fatal(http.ListenAndServe(":8080", r)) //You can modify to run on a different port
 }
