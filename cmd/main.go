@@ -46,7 +46,8 @@ func getCrawlerData(w http.ResponseWriter, r *http.Request) {
 	data := &crawlerdata.UrlToFetch{}
 	err := mh.GetOne(data, bson.M{"id": idToFind})
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Crawler Data with id: %s not found", id), 404)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -95,7 +96,8 @@ func deleteCrawlerData(w http.ResponseWriter, r *http.Request) {
 	var idToFind, _ = strconv.ParseInt(dbId, 10, 64)
 	err := mh.GetOne(existingCrawlerData, bson.M{"id": idToFind})
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Crawled data with id: %d does not exist", idToFind), 400)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
