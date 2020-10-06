@@ -60,11 +60,13 @@ func addCrawlerData(w http.ResponseWriter, r *http.Request) {
 	var data crawlerdata.UrlToFetch
 	json.NewDecoder(r.Body).Decode(&data)
 	data.CreatedAt = time.Now()
-	err := mh.GetOne(existingCrawlerData, bson.M{"id": data.Id})
-	if err == nil {
-		http.Error(w, fmt.Sprintf("Crawler data with id: %d already exist", data.Id), 400)
+	err := mh.GetOneMax(existingCrawlerData, bson.M{}, bson.M{"id": -1})
+	if err != nil {
+		http.Error(w, fmt.Sprint(err), 400)
 		return
 	}
+	data.Id = existingCrawlerData.Id + 1
+
 	_, err = mh.AddOne(&data)
 	if err != nil {
 		http.Error(w, fmt.Sprint(err), 400)

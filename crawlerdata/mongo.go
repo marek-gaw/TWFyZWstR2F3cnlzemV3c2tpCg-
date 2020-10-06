@@ -35,6 +35,17 @@ func (mh *MongoHandler) GetOne(d *UrlToFetch, filter interface{}) error {
 	return err
 }
 
+func (mh *MongoHandler) GetOneMax(d *UrlToFetch, filter interface{}, sort interface{}) error {
+	//Will automatically create a collection if not available
+	collection := mh.client.Database(mh.database).Collection(CollectionName)
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+
+	queryOptions := options.FindOneOptions{}
+	queryOptions.SetSort(sort)
+	err := collection.FindOne(ctx, filter, &queryOptions).Decode(d)
+	return err
+}
+
 func (mh *MongoHandler) GetAll(filter interface{}) []*UrlToFetch {
 	collection := mh.client.Database(mh.database).Collection(CollectionName)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
