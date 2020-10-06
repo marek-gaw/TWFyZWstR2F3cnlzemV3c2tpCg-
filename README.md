@@ -9,8 +9,6 @@ Crawler data are stored to MongoDB database and issued via REST API.
 ```bash
 go mod init fetcher
 go get github.com/go-chi/
-go get github.com/go-chi/docgen
-go get github.com/go-chi/render
 go get go.mongodb.org/mongo-driver/mongo
 ```
 
@@ -37,9 +35,9 @@ go run cmd/main.go
 Create entry
 
 ```bash
-curl -si localhost:8080/api/fetcher -X POST -d '{"id":1, "url":"https://httpbin.org/range/1", "interval":20}'
-curl -si localhost:8080/api/fetcher -X POST -d '{"id":2, "url":"https://httpbin.org/range/1", "interval":20}'
-curl -si localhost:8080/api/fetcher -X POST -d '{"id":3, "url":"https://httpbin.org/range/1", "interval":20}'
+curl -si localhost:8080/api/fetcher -X POST -d '{"url":"https://httpbin.org/range/1", "interval":20}'
+curl -si localhost:8080/api/fetcher -X POST -d '{"url":"https://httpbin.org/range/1", "interval":20}'
+curl -si localhost:8080/api/fetcher -X POST -d '{"url":"https://httpbin.org/range/1", "interval":20}'
 ```
 
 Get all entries
