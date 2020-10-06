@@ -4,11 +4,29 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
+type Result struct {
+	ID       int64
+	Duration time.Duration
+	Payload  string
+}
+
 //DoWork Strategy
-func DoWork(data string) string {
-	return fetchUrlBody(data)
+func DoWork(data string) Result {
+
+	start := time.Now()
+	result := fetchUrlBody(data)
+	end := time.Now()
+	elapsed := end.Sub(start)
+
+	r := Result{
+		Duration: elapsed,
+		Payload:  result,
+	}
+
+	return r
 }
 
 func fetchUrlBody(uri string) string {

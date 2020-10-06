@@ -2,21 +2,23 @@ package pool
 
 import (
 	"fmt"
-	"time"
 
 	work "fetcher/job"
 )
 
+//WorkerCmd type for enumerated worker commands
+type WorkerCmd int
+
+const (
+	Start WorkerCmd = iota
+	Stop
+)
+
 type Work struct {
+	Cmd      WorkerCmd
 	ID       int64
 	Url      string
 	Interval int
-}
-
-type Result struct {
-	ID       int64
-	Duration time.Duration
-	Payload  string
 }
 
 type Worker struct {
@@ -24,7 +26,7 @@ type Worker struct {
 	WorkerChannel chan chan Work // used to communicate between dispatcher and workers
 	Channel       chan Work
 	End           chan bool
-	Resulter      chan Result
+	Resulter      chan work.Result
 }
 
 //Start start worker
@@ -34,13 +36,19 @@ func (w *Worker) Start() {
 			w.WorkerChannel <- w.Channel // when the worker is available place channel in queue
 			select {
 			case job := <-w.Channel: // worker has received job
-				fmt.Println("Worker received new job:", job.Url)
+				fmt.Println("Worker received new job")
+				// for job.Cmd == Start {
+
+				// fmt.Println("Issuing job")
 				r := work.DoWork(job.Url) // do work
-				w.Resulter <- Result{
+				w.Resulter <- work.Result{
 					ID:       job.ID,
-					Duration: time.Second,
-					Payload:  r,
+					Duration: r.Duration,
+					Payload:  r.Payload,
 				}
+				// // fmt.Println("Worker waits interval time")
+				// time.Sleep(time.Duration(job.Interval) * time.Second)
+				// // }
 			case <-w.End:
 				return
 			}
@@ -55,6 +63,6 @@ func (w *Worker) Stop() {
 }
 
 //Results returns job results
-func (w *Worker) Results() <-chan Result {
+func (w *Worker) Results() <-chan work.Result {
 	return w.Resulter
 }
