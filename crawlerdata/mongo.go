@@ -65,10 +65,11 @@ func (mh *MongoHandler) AddOne(d *UrlToFetch) (*mongo.InsertOneResult, error) {
 	return result, err
 }
 
-func (mh *MongoHandler) Update(d *UrlToFetch, filter interface{}, update interface{}) (*mongo.UpdateResult, error) {
+func (mh *MongoHandler) Update(filter interface{}, update interface{}) (*mongo.UpdateResult, error) {
 	collection := mh.client.Database(mh.database).Collection(CollectionName)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	result, err := collection.UpdateMany(ctx, filter, update)
+	result, err := collection.UpdateOne(ctx, filter, update)
+
 	return result, err
 }
 
